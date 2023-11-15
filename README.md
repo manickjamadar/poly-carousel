@@ -2,6 +2,10 @@
 
 It's a react js library used for showing 3d rotating carousel animation
 
+### Preview
+
+![Preview](public/poly-carousel-demo.gif)
+
 ### Features
 
 - Auto Play
