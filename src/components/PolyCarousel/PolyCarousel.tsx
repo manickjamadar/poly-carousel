@@ -8,9 +8,10 @@ interface PolyCourselProps {
   gap?: number;
   children: React.ReactNode;
   resetRotationOnUnmount?: boolean;
-  // rotationDuration?: number;
+  rotationDuration?: number;
   // pauseOnHover?: boolean;
   // autoplay?: boolean;
+  // autoDirection?:"left"|"right"
   // autoplayType?: "smooth" | "onebyone";
   // onPause?: () => void;
   // onResume?: () => void;
@@ -23,7 +24,7 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   gap = 0,
   children,
   resetRotationOnUnmount = true,
-  // rotationDuration = 3000,
+  rotationDuration = 300,
   // autoplay = false,
   // autoplayType = "smooth",
   // pauseOnHover = false,
@@ -60,7 +61,7 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
         position: "relative",
         transformStyle: "preserve-3d",
         transform: `perspective(3000px) rotateY(${rotationAngle}deg)`,
-        transition: "transform 0.3s ease-in-out",
+        transition: `transform ${rotationDuration}ms ease-in-out`,
       }}
     >
       {childElements.map((child, index) => (
