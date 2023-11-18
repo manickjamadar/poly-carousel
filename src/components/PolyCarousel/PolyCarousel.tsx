@@ -9,10 +9,11 @@ interface PolyCourselProps {
   children: React.ReactNode;
   resetRotationOnUnmount?: boolean;
   rotationDuration?: number;
-  // pauseOnHover?: boolean;
   // autoplay?: boolean;
   // autoDirection?:"left"|"right"
   // autoplayType?: "smooth" | "onebyone";
+  // autoPlayDuration?:number
+  // pauseOnHover?: boolean;
   // onPause?: () => void;
   // onResume?: () => void;
 }
@@ -39,12 +40,18 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   );
   const angleStep = 360 / childElements.length;
   useEffect(() => {
-    controller?.ref.current?.on("next", () => {
+    const nextHandler = () => {
       setRotationAngle((prevAngle) => prevAngle + angleStep);
-    });
-    controller?.ref.current?.on("previous", () => {
+    };
+    const previousHandler = () => {
       setRotationAngle((prevAngle) => prevAngle - angleStep);
-    });
+    };
+    controller?.ref.current?.on("next", nextHandler);
+    controller?.ref.current?.on("previous", previousHandler);
+    return () => {
+      controller?.ref.current?.removeListener("next", nextHandler);
+      controller?.ref.current?.removeListener("previous", previousHandler);
+    };
   }, [controller, angleStep]);
   useEffect(() => {
     return () => {
