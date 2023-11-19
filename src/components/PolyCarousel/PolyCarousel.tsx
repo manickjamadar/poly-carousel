@@ -26,7 +26,7 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   rotationDuration = 300,
   autoplay = false,
   direction = "right",
-  autoPlayDuration = 2000,
+  autoPlayDuration = 3000,
   pauseOnHover = false,
   onPause,
   onResume,
