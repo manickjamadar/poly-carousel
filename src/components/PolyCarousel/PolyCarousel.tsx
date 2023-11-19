@@ -8,7 +8,6 @@ interface PolyCourselProps {
   controller?: PolyCarouselController;
   gap?: number;
   children: React.ReactNode;
-  resetRotationOnUnmount?: boolean;
   rotationDuration?: number;
   autoplay?: boolean;
   direction?: "left" | "right";
@@ -24,7 +23,6 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   controller,
   gap = 0,
   children,
-  resetRotationOnUnmount = false,
   rotationDuration = 300,
   autoplay = true,
   direction = "right",
@@ -69,13 +67,6 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
       controller?.ref.current?.removeListener("previous", previousHandler);
     };
   }, [controller, angleStep, autoplay]);
-  useEffect(() => {
-    return () => {
-      if (resetRotationOnUnmount) {
-        setRotationAngle(0);
-      }
-    };
-  }, [resetRotationOnUnmount]);
   return (
     <div
       style={{
