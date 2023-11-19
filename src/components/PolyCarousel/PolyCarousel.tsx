@@ -10,8 +10,8 @@ interface PolyCourselProps {
   children?: React.ReactNode;
   rotationDuration?: number;
   autoplay?: boolean;
-  direction?: "left" | "right";
-  autoPlayDuration?: number;
+  autoplayDirection?: "left" | "right";
+  autoplayDuration?: number;
   pauseOnHover?: boolean;
   onPause?: () => void;
   onResume?: () => void;
@@ -25,8 +25,8 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   children,
   rotationDuration = 300,
   autoplay = false,
-  direction = "right",
-  autoPlayDuration = 3000,
+  autoplayDirection = "right",
+  autoplayDuration = 3000,
   pauseOnHover = false,
   onPause,
   onResume,
@@ -66,7 +66,7 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
     onResume && onResume();
   };
   let animationDirection = "";
-  switch (direction) {
+  switch (autoplayDirection) {
     case "left":
       animationDirection = "reverse";
       break;
@@ -80,11 +80,11 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   const animationValue = useMemo(
     () =>
       autoplay
-        ? `rotate ${autoPlayDuration}ms linear infinite ${animationDirection} ${
+        ? `rotate ${autoplayDuration}ms linear infinite ${animationDirection} ${
             hovered ? "paused" : "running"
           }`
         : "",
-    [autoplay, autoPlayDuration, hovered, animationDirection]
+    [autoplay, autoplayDuration, hovered, animationDirection]
   );
   console.log(childElements);
   if (totalChild === 0) {
