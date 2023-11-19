@@ -1,4 +1,4 @@
-import React, { Children, useEffect, useState } from "react";
+import React, { Children, useEffect, useMemo, useState } from "react";
 import calculateDistanceToCenter from "../../utils/calculateDistanceToCenter";
 import { PolyCarouselController } from "../../hooks/usePolyCarouselController";
 import "./PolyCarousel.css";
@@ -12,9 +12,9 @@ interface PolyCourselProps {
   autoplay?: boolean;
   direction?: "left" | "right";
   autoPlayDuration?: number;
-  // pauseOnHover?: boolean;
-  // onPause?: () => void;
-  // onResume?: () => void;
+  pauseOnHover?: boolean;
+  onPause?: () => void;
+  onResume?: () => void;
 }
 
 const PolyCoursel: React.FC<PolyCourselProps> = ({
@@ -24,23 +24,15 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   gap = 0,
   children,
   rotationDuration = 300,
-  autoplay = true,
+  autoplay = false,
   direction = "right",
   autoPlayDuration = 2000,
+  pauseOnHover = false,
+  onPause,
+  onResume,
 }) => {
   const [rotationAngle, setRotationAngle] = useState(0);
-  let animationName = "rotateRight";
-  switch (direction) {
-    case "left":
-      animationName = "rotateLeft";
-      break;
-    case "right":
-      animationName = "rotateRight";
-      break;
-    default:
-      animationName = "rotateRight";
-      break;
-  }
+  const [hovered, setHovered] = useState(false);
   const childElements = Children.toArray(children);
   const distance = calculateDistanceToCenter(
     cardWidth + gap,
@@ -67,8 +59,39 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
       controller?.ref.current?.removeListener("previous", previousHandler);
     };
   }, [controller, angleStep, autoplay]);
+  const handleMouseEntered = () => {
+    setHovered(true);
+    onPause && onPause();
+  };
+  const handleMouseLeave = () => {
+    setHovered(false);
+    onResume && onResume();
+  };
+  let animationDirection = "";
+  switch (direction) {
+    case "left":
+      animationDirection = "reverse";
+      break;
+    case "right":
+      animationDirection = "normal";
+      break;
+    default:
+      animationDirection = "normal";
+      break;
+  }
+  const animationValue = useMemo(
+    () =>
+      autoplay
+        ? `rotate ${autoPlayDuration}ms linear infinite ${animationDirection} ${
+            hovered ? "paused" : "running"
+          }`
+        : "",
+    [autoplay, autoPlayDuration, hovered, animationDirection]
+  );
   return (
     <div
+      onMouseEnter={autoplay && pauseOnHover ? handleMouseEntered : undefined}
+      onMouseLeave={autoplay && pauseOnHover ? handleMouseLeave : undefined}
       style={{
         width: cardWidth,
         height: cardHeight,
@@ -76,9 +99,7 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
         transformStyle: "preserve-3d",
         transform: `perspective(3000px) rotateY(${rotationAngle}deg)`,
         transition: `transform ${rotationDuration}ms ease-in-out`,
-        animation: autoplay
-          ? `${animationName} ${autoPlayDuration}ms linear infinite`
-          : "",
+        animation: animationValue,
       }}
     >
       {childElements.map((child, index) => (
