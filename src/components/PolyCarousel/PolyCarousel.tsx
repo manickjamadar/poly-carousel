@@ -7,7 +7,7 @@ interface PolyCourselProps {
   cardHeight: number;
   controller?: PolyCarouselController;
   gap?: number;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   rotationDuration?: number;
   autoplay?: boolean;
   direction?: "left" | "right";
@@ -34,11 +34,9 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   const [rotationAngle, setRotationAngle] = useState(0);
   const [hovered, setHovered] = useState(false);
   const childElements = Children.toArray(children);
-  const distance = calculateDistanceToCenter(
-    cardWidth + gap,
-    childElements.length
-  );
-  const angleStep = 360 / childElements.length;
+  const totalChild = childElements.length;
+  const distance = calculateDistanceToCenter(cardWidth + gap, totalChild);
+  const angleStep = totalChild > 0 ? 360 / totalChild : 0;
   useEffect(() => {
     const nextHandler = () => {
       if (autoplay) {
@@ -88,6 +86,10 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
         : "",
     [autoplay, autoPlayDuration, hovered, animationDirection]
   );
+  console.log(childElements);
+  if (totalChild === 0) {
+    return null;
+  }
   return (
     <div
       onMouseEnter={autoplay && pauseOnHover ? handleMouseEntered : undefined}
