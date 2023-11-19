@@ -1,6 +1,7 @@
 import React, { Children, useEffect, useState } from "react";
 import calculateDistanceToCenter from "../../utils/calculateDistanceToCenter";
 import { PolyCarouselController } from "../../hooks/usePolyCarouselController";
+import "./PolyCarousel.css";
 interface PolyCourselProps {
   cardWidth: number;
   cardHeight: number;
@@ -9,10 +10,9 @@ interface PolyCourselProps {
   children: React.ReactNode;
   resetRotationOnUnmount?: boolean;
   rotationDuration?: number;
-  // autoplay?: boolean;
-  // autoDirection?:"left"|"right"
-  // autoplayType?: "smooth" | "onebyone";
-  // autoPlayDuration?:number
+  autoplay?: boolean;
+  direction?: "left" | "right";
+  autoPlayDuration?: number;
   // pauseOnHover?: boolean;
   // onPause?: () => void;
   // onResume?: () => void;
@@ -24,15 +24,25 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   controller,
   gap = 0,
   children,
-  resetRotationOnUnmount = true,
+  resetRotationOnUnmount = false,
   rotationDuration = 300,
-  // autoplay = false,
-  // autoplayType = "smooth",
-  // pauseOnHover = false,
-  // onPause,
-  // onResume,
+  autoplay = true,
+  direction = "right",
+  autoPlayDuration = 2000,
 }) => {
   const [rotationAngle, setRotationAngle] = useState(0);
+  let animationName = "rotateRight";
+  switch (direction) {
+    case "left":
+      animationName = "rotateLeft";
+      break;
+    case "right":
+      animationName = "rotateRight";
+      break;
+    default:
+      animationName = "rotateRight";
+      break;
+  }
   const childElements = Children.toArray(children);
   const distance = calculateDistanceToCenter(
     cardWidth + gap,
@@ -41,9 +51,15 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
   const angleStep = 360 / childElements.length;
   useEffect(() => {
     const nextHandler = () => {
+      if (autoplay) {
+        return;
+      }
       setRotationAngle((prevAngle) => prevAngle + angleStep);
     };
     const previousHandler = () => {
+      if (autoplay) {
+        return;
+      }
       setRotationAngle((prevAngle) => prevAngle - angleStep);
     };
     controller?.ref.current?.on("next", nextHandler);
@@ -52,7 +68,7 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
       controller?.ref.current?.removeListener("next", nextHandler);
       controller?.ref.current?.removeListener("previous", previousHandler);
     };
-  }, [controller, angleStep]);
+  }, [controller, angleStep, autoplay]);
   useEffect(() => {
     return () => {
       if (resetRotationOnUnmount) {
@@ -69,6 +85,9 @@ const PolyCoursel: React.FC<PolyCourselProps> = ({
         transformStyle: "preserve-3d",
         transform: `perspective(3000px) rotateY(${rotationAngle}deg)`,
         transition: `transform ${rotationDuration}ms ease-in-out`,
+        animation: autoplay
+          ? `${animationName} ${autoPlayDuration}ms linear infinite`
+          : "",
       }}
     >
       {childElements.map((child, index) => (

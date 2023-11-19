@@ -1,0 +1,16 @@
+@keyframes rotateRight {
+    0%{
+        transform: perspective(3000px) rotateY(0deg);
+    }
+    100%{
+        transform: perspective(3000px) rotateY(360deg);
+    }
+}
+@keyframes rotateLeft {
+    0%{
+        transform: perspective(3000px) rotateY(0deg);
+    }
+    100%{
+        transform: perspective(3000px) rotateY(-360deg);
+    }
+}
